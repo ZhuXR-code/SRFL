@@ -38,6 +38,8 @@ srfl_fl_env\Scripts\activate  # Windows
 pip install torch numpy scipy matplotlib pandas tqdm
 ```
 
+charm-crypto
+
 
 ### 3. 项目目录结构
 ```
