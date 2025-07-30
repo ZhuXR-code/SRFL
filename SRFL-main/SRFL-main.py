@@ -200,15 +200,6 @@ if __name__ == '__main__':
                 value_length.append(value.numel())  # 获取每个张量的元素数量
                 key_w[key] = None  # 初始化权重字典
 
-            # 权重处理
-            for key, value in w.items():
-                origin_shape = value.shape  # 获取原始形状
-                value_shape.append(origin_shape)  # 记录形状
-                v = value.reshape(-1)  # 将张量展平为一维
-                if combined_tensor is None:
-                    combined_tensor = v  # 初始化合并张量
-                else:
-                    combined_tensor = torch.cat((combined_tensor, v), dim=0)  # 合并张量
 
 
             # 记录当前值的长度到列表
@@ -247,8 +238,7 @@ if __name__ == '__main__':
         for j in transpose1:
             output1 = fe.Decrypt(j, y, N)  # 解密 output1 是int
             output.append(output1)  # 添加解密结果到列表
-            # 加密时候是 (x.item() + offset) * scale_factor，解密的时候由于是合并了的，所以要offset*user_num
-            result11.append(output1/scale_factor - offset*user_num)
+            result11.append(output1)
 
         log_and_print(f'len(output):{len(output)}   |   len(result11):{len(result11)}')
         t4 = time.time()  # 记录解密结束时间
@@ -278,10 +268,7 @@ if __name__ == '__main__':
             log_and_print(f'shape_index={shape_index} | length= {length} | value_shape= {value_shape[shape_index]}')
             spilt_tensor1.append(spilt_tensor.reshape(value_shape[shape_index]))  # 将tensor转为原始的维度
 
-        # 遍历键值对，将分割后的张量按顺序替换到对应键的权重中,同时维护张量索引计数器实现顺序替换
-        for key, tensor in key_w.items():  # 将tensor替换给原始数据中key对应的值
-            partial_global_weights_right[key] = torch.from_numpy(spilt_tensor1[tensor_index])
-            tensor_index = tensor_index + 1
+
         # 更新全局权重引用并打印当前聚合模型参数
         partial_global_weights = partial_global_weights_right
 
